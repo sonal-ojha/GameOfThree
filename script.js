@@ -9,6 +9,8 @@ const player = document.getElementById("player");
 const resultContainer = document.getElementById("result-container");
 const result = document.getElementById("result");
 
+const randomNum = document.getElementById('random-num');
+
 // Buttons -1, 0 and 1
 const btnInputNegativeOne = document.getElementById("btn--1");
 const btnInputZero = document.getElementById("btn-0");
@@ -17,12 +19,12 @@ const btnInputPositiveOne = document.getElementById("btn-1");
 // Restart Game over button
 const btnRestartGame = document.getElementById("btn-restart");
 
-const randomNumber = document.getElementById("random-num").textContent;
-
-let currentNumber = randomNumber;
-
 // Display 'You Won or Lost' to the player
 const hasReachedTheEndPoint = number => number == 1;
+
+// Generate max - 2 digit random Whole Number
+// May also return 0 & 1, as they are also Whole Numbers
+const getRandomWholeNumber = () => Math.floor(Math.random() * 100);
 
 const displayResults = text => {
   resultContainer.classList.add("display-result");
@@ -30,7 +32,9 @@ const displayResults = text => {
 };
 
 const name = prompt("Please enter your name to start the game ?");
-socket.emit("new-user", name);
+
+// Indicate server about new player
+socket.emit("new-user", { name, randomNumber: getRandomWholeNumber()});
 
 const getOperationTypeAndValue = value => {
   let operation = "-1";
@@ -50,76 +54,49 @@ const getOperationTypeAndValue = value => {
 };
 
 // system logic for three-code
-const generateSystemNumber = () => {
-  const initialNumber = currentNumber;
-  const { newVal, operation } = getOperationTypeAndValue(currentNumber);
-  currentNumber = newVal;
+const generateSystemNumber = currentValue => {
+  const initialNumber = currentValue;
+  const { newVal, operation } = getOperationTypeAndValue(currentValue);
+  currentValue = newVal;
   // Append Text based on operation selection made by System
-  const elm = createMessage(operation, initialNumber, currentNumber, false);
+  const elm = createMessage(operation, initialNumber, currentValue, false);
   appendMessage(elm);
-  if (hasReachedTheEndPoint(currentNumber)) {
+  // Emit to update system generated value in server
+  socket.emit("system-input-value", currentValue);
+  if (hasReachedTheEndPoint(currentValue)) {
     displayResults(WIN_TEXT);
   }
 };
 
 // Decide to Progress/End in game
-const makeDecisionToProgress = () => {
-  if (hasReachedTheEndPoint(currentNumber)) {
+const makeDecisionToProgress = currentValue => {
+  if (hasReachedTheEndPoint(currentValue)) {
     displayResults(WIN_TEXT);
     return;
   }
-  generateSystemNumber();
+  generateSystemNumber(currentValue);
 };
 
 // player connection established
-socket.on("user-connected", name => {
-  player.innerText = `Welcome ${name}!`;
+socket.on("user-connected", ({ name, currentValue }) => {
+  if (!!name) {
+    player.innerText = `Welcome ${name}!`;
+  }
+  randomNum.innerText = currentValue;
 });
 
 // Add Click events to all three buttons
 // -1, 0 and 1
 btnInputNegativeOne.addEventListener("click", e => {
-  const initialNumber = currentNumber;
-  if ((Number(currentNumber) - 1) % 3 === 0) {
-    currentNumber = (Number(currentNumber) - 1) / 3;
-    const elm = createMessage("-1", initialNumber, currentNumber);
-    appendMessage(elm);
-    makeDecisionToProgress();
-    return;
-  }
-  // If current selection of operation type by player leads to Non Whole number: suggest player about the selection of operation type to Win
-  const { operation } = getOperationTypeAndValue(currentNumber);
-  setFocusForOperationType(operation);
-  // END the process - as the selection of operation leads to Decimal number
-  // displayResults(LOST_TEXT);
+  socket.emit("user-input", '-1');
 });
 
 btnInputZero.addEventListener("click", e => {
-  const initialNumber = currentNumber;
-  if (Number(currentNumber) % 3 === 0) {
-    currentNumber = Number(currentNumber) / 3;
-    const elm = createMessage("+0", initialNumber, currentNumber);
-    appendMessage(elm);
-    makeDecisionToProgress();
-    return;
-  }
-  // To Suggest player about the selection of operation type to Win
-  const { operation } = getOperationTypeAndValue(currentNumber);
-  setFocusForOperationType(operation);
+  socket.emit("user-input", '+0');
 });
 
 btnInputPositiveOne.addEventListener("click", e => {
-  const initialNumber = currentNumber;
-  if ((Number(currentNumber) + 1) % 3 === 0) {
-    currentNumber = (Number(currentNumber) + 1) / 3;
-    const elm = createMessage("+1", initialNumber, currentNumber);
-    appendMessage(elm);
-    makeDecisionToProgress();
-    return;
-  }
-  // To Suggest player about the selection of operation type to Win
-  const { operation } = getOperationTypeAndValue(currentNumber);
-  setFocusForOperationType(operation);
+  socket.emit("user-input", '+1');
 });
 // - Adding Events Logic ends
 
@@ -163,9 +140,18 @@ function appendMessage(elm) {
   messageContainer.append(elm);
 }
 
+socket.on("user-input-calculated", ({ operation, currentValue, initialValue }) => {
+  const elm = createMessage(operation, initialValue, currentValue);
+  appendMessage(elm);
+  makeDecisionToProgress(currentValue);
+});
+
+// If current selection of operation type by player leads to Non Whole number: suggest player about the selection of operation type to Win
+socket.on("suggest-correct-operation", currentValue => {
+  const { operation } = getOperationTypeAndValue(currentValue);
+  setFocusForOperationType(operation);
+});
+
 socket.on("user-disconnected", name => {
   displayResults(`Sorry ${name}, We lost the connection!!`);
 });
-
-// const LOST_TEXT =
-//   "Sorry, you Loose!! As the result of operation is NOT a whole number";

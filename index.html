@@ -6,7 +6,6 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Game of Three</title>
   <link rel="stylesheet" href="./styles.css" />
-  <script defer src="http://localhost:3000/socket.io/socket.io.js"></script>
 </head>
 <body>
   <!-- Header -->
@@ -34,11 +33,7 @@
       <button id="btn-restart" class="btn-restart">Restart Game</button>
     </div>
   </div>
-  <script>
-    const getRandomWholeNumber = () => Math.floor(Math.random() * 100);
-    const randomNum = document.getElementById('random-num');
-    randomNum.innerText = getRandomWholeNumber();
-  </script>
+  <script defer src="http://localhost:3000/socket.io/socket.io.js"></script>
   <script defer src="script.js"></script>
 </body>
 </html>
