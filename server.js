@@ -16,8 +16,10 @@ io.on('connection', socket => {
 
   // User selection between operation types {-1, 0 & 1}
   socket.on('user-input', (operation) => {
+    // case to handle for random whole number is '0'
     if (currentValue === 0) {
       socket.emit('least-random-number-zero', '0');
+      return;
     }
     const initialValue = currentValue;
     if (operation === '-1') {

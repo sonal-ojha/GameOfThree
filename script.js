@@ -152,6 +152,10 @@ socket.on("suggest-correct-operation", currentValue => {
   setFocusForOperationType(operation);
 });
 
+socket.on("least-random-number-zero", value => {
+  displayResults(`${value} is a Whole Number but not feasible for our game. Please Restart Game!`);
+})
+
 socket.on("user-disconnected", name => {
   displayResults(`Sorry ${name}, We lost the connection!!`);
 });
