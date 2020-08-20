@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Game of Three</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <script defer src="http://localhost:3000/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <!-- Header -->
+  <header class="flex-center">
+    <h2>Game of Three</h2>
+  </header>
+  <!-- Main Container -->
+  <div class="threecode-container">
+    <div class="m-tb-15 flex-center">
+      <span>Starting game with Number :</span>&nbsp;
+      <div id="random-num" class="random-number"></div>
+    </div>
+    <div id="player" class="flex-center player m-tb-15"></div>
+    <div id="message-container"></div>
+    <div id="btn-container">
+        <button id="btn--1">-1</button>
+        <button id="btn-0" class="m-lr-15">0</button>
+        <button id="btn-1">1</button>
+    </div>
+  </div>
+  <!-- Results Won/Loose Container -->
+  <div id="result-container" class="result-container display-none">
+    <div id="result" class="result"></div>
+  </div>
+  <script>
+    const getRandomWholeNumber = () => Math.floor(Math.random() * 100)
+    const randomNum = document.getElementById('random-num')
+    randomNum.innerText = getRandomWholeNumber();
+  </script>
+  <script defer src="script.js"></script>
+</body>
+</html>
