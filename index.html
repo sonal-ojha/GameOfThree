@@ -29,7 +29,10 @@
   </div>
   <!-- Results Won/Loose Container -->
   <div id="result-container" class="result-container display-none">
-    <div id="result" class="result"></div>
+    <div class="result-data">
+      <div id="result"></div>
+      <button id="btn-restart" class="btn-restart">Restart Game</button>
+    </div>
   </div>
   <script>
     const getRandomWholeNumber = () => Math.floor(Math.random() * 100);

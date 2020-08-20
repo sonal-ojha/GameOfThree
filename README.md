@@ -14,4 +14,4 @@ Open index.html path in the browser to run in development mode.
 Initially generate a random 2 digit Whole Number (0 is also a Whole number).<br />
 Player has option to select { -1, 0, 1 } button to perform operation on the random Whole Number.<br />
 If the selection of operation type made by player does not leads to whole number as result, then the correct operation type to choose is suggested using 'focus' on the button.<br />
-If the value reaches ONE then You WIN text is displayed.
+If the value reaches ONE then 'You WON' text is displayed.

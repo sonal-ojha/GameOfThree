@@ -14,6 +14,9 @@ const btnInputNegativeOne = document.getElementById("btn--1");
 const btnInputZero = document.getElementById("btn-0");
 const btnInputPositiveOne = document.getElementById("btn-1");
 
+// Restart Game over button
+const btnRestartGame = document.getElementById("btn-restart");
+
 const randomNumber = document.getElementById("random-num").textContent;
 
 let currentNumber = randomNumber;
@@ -119,6 +122,11 @@ btnInputPositiveOne.addEventListener("click", e => {
   setFocusForOperationType(operation);
 });
 // - Adding Events Logic ends
+
+// Refresh and Restart the Game
+btnRestartGame.addEventListener("click", e => {
+  window.location.reload();
+});
 
 function createMessage(
   operationTyp,
